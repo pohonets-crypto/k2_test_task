@@ -1,7 +1,7 @@
 from sqlalchemy import Table, Column, Integer, String, MetaData, ForeignKey, Float
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from database import Base
+from app.database import Base
 
 OrderProducts = Table(
     "order_products",
@@ -19,7 +19,9 @@ class Client(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     client_name: Mapped[str] = mapped_column(String(100), nullable=False)
 
-    orders = relationship("Order", back_populates="client")
+    orders: Mapped[list["Order"]] = relationship(
+        "Order",
+        back_populates="client")
 
 
 class Product(Base):
@@ -29,11 +31,10 @@ class Product(Base):
     product_name: Mapped[str] = mapped_column(String(100), nullable=False)
     price: Mapped[float] = mapped_column(Float)
 
-    orders: Mapped["Order"] = relationship(
+    orders: Mapped[list["Order"]] = relationship(
         "Order",
         secondary=OrderProducts,
         back_populates="products",
-        lazy="selectin"
     )
 
 
@@ -42,6 +43,7 @@ class Order(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     client_id: Mapped[int] = mapped_column(Integer, ForeignKey("clients.id"), nullable=False)
+    amount: Mapped[float] = mapped_column(Float)
 
     client: Mapped[Client] = relationship(
         Client,
@@ -52,5 +54,4 @@ class Order(Base):
         Product,
         secondary=OrderProducts,
         back_populates="orders",
-        lazy="selectin"
     )
