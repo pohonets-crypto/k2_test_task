@@ -12,6 +12,7 @@ OrderProducts = Table(
            ForeignKey("products.id", ondelete="CASCADE"), primary_key=True),
 )
 
+
 class Client(Base):
     __tablename__ = "clients"
 
