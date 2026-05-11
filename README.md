@@ -30,6 +30,6 @@ docker-compose build
 docker-compose up
 ```
 
-Allows at: http://127.0.0.1:8000/docs
+Allows at: http://127.0.0.1:8000
 
 Swagger API Documentation: http://127.0.0.1:8000/docs
