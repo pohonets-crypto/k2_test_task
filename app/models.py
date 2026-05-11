@@ -6,10 +6,18 @@ from app.database import Base
 OrderProducts = Table(
     "order_products",
     Base.metadata,
-    Column("order_id", Integer,
-           ForeignKey("orders.id", ondelete="CASCADE"), primary_key=True),
-    Column("product_id", Integer,
-           ForeignKey("products.id", ondelete="CASCADE"), primary_key=True),
+    Column(
+        "order_id",
+        Integer,
+        ForeignKey("orders.id", ondelete="CASCADE"),
+        primary_key=True,
+    ),
+    Column(
+        "product_id",
+        Integer,
+        ForeignKey("products.id", ondelete="CASCADE"),
+        primary_key=True,
+    ),
 )
 
 
@@ -19,9 +27,7 @@ class Client(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     client_name: Mapped[str] = mapped_column(String(100), nullable=False)
 
-    orders: Mapped[list["Order"]] = relationship(
-        "Order",
-        back_populates="client")
+    orders: Mapped[list["Order"]] = relationship("Order", back_populates="client")
 
 
 class Product(Base):
@@ -42,7 +48,9 @@ class Order(Base):
     __tablename__ = "orders"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    client_id: Mapped[int] = mapped_column(Integer, ForeignKey("clients.id"), nullable=False)
+    client_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("clients.id"), nullable=False
+    )
     amount: Mapped[float] = mapped_column(Float)
 
     client: Mapped[Client] = relationship(

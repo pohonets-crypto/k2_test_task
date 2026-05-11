@@ -7,7 +7,14 @@ from sqlalchemy.orm import selectinload
 
 from app.database import get_db
 from app.models import Product, Client, Order
-from app.schemas import ClientRead, ClientCreate, ProductRead, ProductCreate, OrderRead, OrderCreate
+from app.schemas import (
+    ClientRead,
+    ClientCreate,
+    ProductRead,
+    ProductCreate,
+    OrderRead,
+    OrderCreate,
+)
 
 app = FastAPI()
 
@@ -23,7 +30,11 @@ async def create_client(client: ClientCreate, db: AsyncSession = Depends(get_db)
     await db.commit()
     await db.refresh(new_client)
 
-    stmt = select(Client).where(Client.id == new_client.id).options(selectinload(Client.orders))
+    stmt = (
+        select(Client)
+        .where(Client.id == new_client.id)
+        .options(selectinload(Client.orders))
+    )
     result = await db.execute(stmt)
     new_client = result.scalar_one()
 
@@ -62,7 +73,9 @@ async def create_order(order_data: OrderCreate, db: AsyncSession = Depends(get_d
     products = result.scalars().all()
 
     if not products:
-        raise HTTPException(status_code=404, detail="Order must contain at least 1 product")
+        raise HTTPException(
+            status_code=404, detail="Order must contain at least 1 product"
+        )
 
     amount = sum([product.price for product in products])
 
@@ -75,7 +88,9 @@ async def create_order(order_data: OrderCreate, db: AsyncSession = Depends(get_d
     db.add(order)
     await db.commit()
 
-    stmt = select(Order).where(Order.id == order.id).options(selectinload(Order.products))
+    stmt = (
+        select(Order).where(Order.id == order.id).options(selectinload(Order.products))
+    )
     result = await db.execute(stmt)
     order = result.scalar_one()
 
@@ -84,7 +99,11 @@ async def create_order(order_data: OrderCreate, db: AsyncSession = Depends(get_d
 
 @app.get("/order", response_model=List[OrderRead])
 async def get_order_by_client_id(client_id: int, db: AsyncSession = Depends(get_db)):
-    stmt = select(Order).where(Order.client_id == client_id).options(selectinload(Order.products))
+    stmt = (
+        select(Order)
+        .where(Order.client_id == client_id)
+        .options(selectinload(Order.products))
+    )
     result = await db.execute(stmt)
 
     orders = result.scalars().all()
